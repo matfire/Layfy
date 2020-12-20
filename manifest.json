@@ -1,0 +1,59 @@
+{
+    "name":"Layfy",
+    "version":"0.1.4",
+    "description":"Control your spotify playback in a popup window",
+    "manifest_version": 2,
+    "browser_action": {
+        "default_popup":"index.html"
+    },
+    "options_ui": {
+        "page":"options.html",
+        "open_in_tab":false
+    },
+    "background": {
+        "page":"background.html",
+        "persistent":false
+    },
+    "commands": {
+        "toggle_play_pause": {
+            "description":"Pause/Resume playback",
+            "suggested_key": {
+                "windows": "Ctrl+Shift+Y",
+                "mac":"Command+Shift+Y",
+                "linux":"Ctrl+Shift+Y",
+                "chromeos":"Ctrl+Shift+Y"
+            }
+        },
+        "skip_to_next": {
+            "description":"Skip to next track",
+            "suggested_key":{
+                "windows":"Ctrl+Shift+Period",
+                "mac":"Command+Shift+Period",
+                "linux":"Ctrl+Shift+Period",
+                "chromeos":"Ctrl+Shift+Period"
+            }
+        },
+        "skip_to_prev": {
+            "description":"Skip to previous track",
+            "suggested_key": {
+                "windows":"Ctrl+Shift+Comma",
+                "mac":"Command+Shift+Comma",
+                "linux":"Ctrl+Shift+Comma",
+                "chromeos":"Ctrl+Shift+Comma"
+            }
+        },
+        "change_volume": {
+            "description":"Mute/Unmute volume on device",
+            "windows":"",
+            "mac":"",
+            "linux":"",
+            "chromeos":""
+        }
+    },
+    "icons": {
+        "16": "icons/icons/16.png",
+        "48": "icons/icons/48.png",
+        "128": "icons/icons/128.png"
+    },
+    "permissions": ["notifications"]
+}

@@ -1,0 +1,31 @@
+.optionsContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.branding {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.brandTitle {
+    font-weight: bold;
+    font-size: x-large;
+}
+
+.brandLogo {
+    width: 50%;
+    height: auto;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-width: 300px;
+    min-height: 300px;
+}

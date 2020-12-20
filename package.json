@@ -1,0 +1,31 @@
+{
+  "name": "SpotiControl",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:pre": "rm package.zip",
+    "build": "snowpack build",
+    "build:post": "cd build; zip -r ../package.zip *; cd .."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "2.2.1",
+    "snowpack": "^2.18.2"
+  },
+  "dependencies": {
+    "@types/chrome": "0.0.127",
+    "events": "^3.2.0",
+    "materialize-css": "^1.0.0-rc.2",
+    "qs": "^6.9.4",
+    "spotify-web-api-js": "^1.5.1"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "build/"
+    ]
+  }
+}
