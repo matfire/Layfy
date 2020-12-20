@@ -7,6 +7,13 @@ function sleep(ms) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+const isLiked = async (id) => {
+	await refreshTokens();
+
+	const saved = await spotyClient.containsMySavedTracks([id]);
+	return saved[0];
+};
+
 const refreshTokens = async () => {
 	const res = await fetch(BASE_URL + "/refresh", {
 		method: "POST",
@@ -132,16 +139,25 @@ const changeRepeat = async () => {
 	await refreshTokens();
 
 	const track = await spotyClient.getMyCurrentPlaybackState();
-
-	switch (track.repeat_state) {
-		case "off":
-			break;
-		case "context":
-			break;
-		case "track":
-			break;
-		default:
-			break;
+	try {
+		switch (track.repeat_state) {
+			case "off":
+				await spotyClient.setRepeat("track");
+				return { type: "success", msg: "changed repeat to track" };
+				break;
+			case "context":
+				await spotyClient.setRepeat("off");
+				return { type: "success", msg: "changed repeat to off" };
+				break;
+			case "track":
+				await spotyClient.setRepeat("context");
+				return { type: "success", msg: "changed repeat to context" };
+				break;
+			default:
+				break;
+		}
+	} catch (error) {
+		return { type: "fail", msg: "could not change repeat setting" };
 	}
 };
 
@@ -176,6 +192,42 @@ const changeVolume = async () => {
 		} catch (error) {
 			return { type: "fail", msg: "cannot set volume on this device" };
 		}
+	}
+};
+
+const changeShuffle = async () => {
+	await refreshTokens();
+
+	const track = await spotyClient.getMyCurrentPlaybackState();
+
+	await spotyClient.setShuffle(!track.shuffle_state);
+	return { type: "success", msg: "changed repeat state" };
+};
+
+const likeSong = async (currentSong) => {
+	await refreshTokens();
+
+	const saved = await spotyClient.containsMySavedTracks([
+		currentSong.item.id,
+	]);
+	if (saved[0] && saved[0] === true) {
+		await spotyClient.removeFromMySavedTracks([currentSong.item.id]);
+		await sleep(500);
+		const updated = await spotyClient.containsMySavedTracks([
+			currentSong.item.id,
+		]);
+		if (updated[0] === false)
+			return { type: "success", msg: "removed from saved tracks" };
+		else return likeSong(currentSong);
+	} else {
+		await spotyClient.addToMySavedTracks([currentSong.item.id]);
+		await sleep(500);
+		const updated = await spotyClient.containsMySavedTracks([
+			currentSong.item.id,
+		]);
+		if (updated[0] === true)
+			return { type: "success", msg: "added to saved tracks" };
+		else return likeSong(currentSong);
 	}
 };
 
@@ -230,10 +282,16 @@ window.addEventListener("storage", (ev) => {
 let track;
 let error;
 chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
+	console.info(`received:`, msg);
 	switch (msg.type) {
 		case "get_data":
+			await refreshTokens();
 			track = await spotyClient.getMyCurrentPlaybackState();
 			chrome.runtime.sendMessage({ type: "initialData", data: track });
+			break;
+		case "update_data":
+			track = await spotyClient.getMyCurrentPlaybackState();
+			chrome.runtime.sendMessage({ type: "updateTrack", data: track });
 			break;
 		case "play_pause":
 			error = await playPause();
@@ -263,7 +321,32 @@ chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
 			chrome.runtime.sendMessage({ type: "updateTrack", data: track });
 			break;
 		case "change_repeat":
+			await refreshTokens();
 			error = await changeRepeat();
+			if (error.type == "fail") {
+				chrome.runtime.sendMessage({
+					type: "errorMessage",
+					value: error.msg,
+				});
+				break;
+			}
+			track = await spotyClient.getMyCurrentPlaybackState();
+			chrome.runtime.sendMessage({ type: "updateTrack", data: track });
+			break;
+		case "shuffle_change":
+			error = await changeShuffle();
+			track = await spotyClient.getMyCurrentPlaybackState();
+			chrome.runtime.sendMessage({ type: "updateTrack", data: track });
+			break;
+		case "like_song":
+			track = await spotyClient.getMyCurrentPlaybackState();
+			error = await likeSong(track);
+			track = await spotyClient.getMyCurrentPlaybackState();
+			chrome.runtime.sendMessage({ type: "updateTrack", data: track });
+			break;
+		case "check_liked":
+			const saved = await isLiked(msg.id);
+			chrome.runtime.sendMessage({ type: "liked_song_value", saved });
 			break;
 	}
 });

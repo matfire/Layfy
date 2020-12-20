@@ -1,6 +1,5 @@
 import "materialize-css/dist/css/materialize.min.css";
 import "materialize-css/dist/js/materialize.min";
-import spotifyWebApi from "spotify-web-api-js";
 import { EventEmitter } from "events";
 
 const BASE_URL = "https://api.spotycontrol.nirah.tech";
@@ -25,9 +24,29 @@ trackEvent.on("updateTrack", (data) => {
 	updateSpotify(data);
 });
 
+trackEvent.on("liked_song_value", (value) => {
+	const likeButton = document.getElementById("likeButton");
+	likeButton.src = value
+		? "icons/controllers/heart-2.svg"
+		: "icons/controllers/heart.svg";
+});
+
+/**
+ *
+ * @param {SpotifyApi.CurrentPlaybackResponse} song
+ */
+const isLiked = (song) => {
+	chrome.runtime.sendMessage({ type: "check_liked", id: song.item.id });
+};
+
+/**
+ *
+ * @param {SpotifyApi.CurrentPlaybackResponse} currentlyPlaying
+ */
 const updateSpotify = async (currentlyPlaying) => {
 	showOverlay();
 	if (currentlyPlaying) {
+		isLiked(currentlyPlaying);
 		const albumImage = document.querySelector("img.albumImage");
 		if (albumImage.src !== currentlyPlaying.item.album.images[0].url)
 			albumImage.src = currentlyPlaying.item.album.images[0].url;
@@ -64,6 +83,10 @@ const updateSpotify = async (currentlyPlaying) => {
 				repeatButton.src = "icons/controllers/ic_repeat_context.svg";
 				break;
 		}
+		const shuffleButton = document.getElementById("shuffleButton");
+		shuffleButton.src = currentlyPlaying.shuffle_state
+			? "icons/controllers/shuffle-on.svg"
+			: "icons/controllers/shuffle-off.svg";
 
 		hideOverlay();
 	} else {
@@ -118,6 +141,10 @@ const generateLoginPage = () => {
 	main.appendChild(root);
 };
 
+/**
+ *
+ * @param {SpotifyApi.CurrentPlaybackResponse} currentlyPlaying
+ */
 const generateSpotifyPage = async (currentlyPlaying) => {
 	const container = document.createElement("div");
 	container.classList.add("currentlyPlayingContainer");
@@ -127,19 +154,11 @@ const generateSpotifyPage = async (currentlyPlaying) => {
 		const imgContainer = document.createElement("div");
 		imgContainer.classList.add("albumContainer");
 		const albumImage = document.createElement("img");
-		const reloadIcon = document.createElement("img");
 
 		albumImage.classList.add("albumImage");
 		albumImage.src = currentlyPlaying.item.album.images[0].url;
 
-		reloadIcon.src = "icons/reload.svg";
-		reloadIcon.classList.add("reload");
-
-		reloadIcon.onclick = async () => {
-			await updateSpotify();
-		};
 		imgContainer.appendChild(albumImage);
-		imgContainer.appendChild(reloadIcon);
 		const textContainer = document.createElement("div");
 		textContainer.classList.add("textContainer");
 		const trackTitle = document.createElement("h3");
@@ -228,10 +247,52 @@ const generateSpotifyPage = async (currentlyPlaying) => {
 		controllerContainer.appendChild(playPauseButton);
 		controllerContainer.appendChild(nextButton);
 		controllerContainer.appendChild(volumeButton);
+
+		const topControlsContainer = document.createElement("div");
+
+		const shuffleButton = document.createElement("img");
+		shuffleButton.classList.add("controller", "tooltipped");
+		shuffleButton.setAttribute("data-position", "top");
+		shuffleButton.setAttribute("data-tooltip", "Toggle shuffle");
+		shuffleButton.id = "shuffleButton";
+		shuffleButton.src = currentlyPlaying.shuffle_state
+			? "icons/controllers/shuffle-on.svg"
+			: "icons/controllers/shuffle-off.svg";
+		shuffleButton.onclick = () => {
+			showOverlay();
+			chrome.runtime.sendMessage({ type: "shuffle_change" });
+		};
+
+		const reloadButton = document.createElement("img");
+		reloadButton.src = "icons/reload.svg";
+		reloadButton.classList.add("controller", "tooltipped");
+		reloadButton.setAttribute("data-position", "top");
+		reloadButton.setAttribute("data-tooltip", "Refresh data");
+
+		reloadButton.onclick = async () => {
+			showOverlay();
+			chrome.runtime.sendMessage({ type: "update_data" });
+		};
+		const likeButton = document.createElement("img");
+
+		likeButton.classList.add("controller", "tooltipped");
+		likeButton.id = "likeButton";
+		likeButton.setAttribute("data-position", "top");
+		likeButton.setAttribute("data-tooltip", "Add/Remove from saved tracks");
+		likeButton.onclick = () => {
+			chrome.runtime.sendMessage({ type: "like_song" });
+		};
+		isLiked(currentlyPlaying);
+
+		topControlsContainer.classList.add("controllerContainer");
+		topControlsContainer.appendChild(shuffleButton);
+		topControlsContainer.appendChild(reloadButton);
+		topControlsContainer.appendChild(likeButton);
 		container.appendChild(imgContainer);
 		textContainer.appendChild(trackTitle);
 		textContainer.appendChild(trackArtist);
 		container.appendChild(textContainer);
+		container.append(topControlsContainer);
 		container.appendChild(controllerContainer);
 		main.appendChild(container);
 		const tooltipped = document.querySelectorAll(".tooltipped");
@@ -276,6 +337,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 			break;
 		case "updateTrack":
 			trackEvent.emit("updateTrack", msg.data);
+			break;
+		case "liked_song_value":
+			trackEvent.emit("liked_song_value", msg.saved);
 			break;
 		case "errorMessage":
 			M.toast({ html: `Error: ${msg.value}` });

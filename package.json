@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@types/chrome": "0.0.127",
+    "autoprefixer": "^10.1.0",
     "events": "^3.2.0",
     "materialize-css": "^1.0.0-rc.2",
     "qs": "^6.9.4",
