@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<style>
+			:root {
+				--backgroundColor: black;
+				--textColor: white;
+			}
+			body {
+				margin: 0;
+				padding: 0;
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+				width: 450px;
+				height: 50px;
+				background-color: var(--backgroundColor);
+				color: var(--textColor);
+			}
+
+			#left {
+				width: 60%;
+				height: 100vh;
+				display: flex;
+				flex-direction: column;
+				margin-left: 5px;
+			}
+
+			#right {
+				height: 100vh;
+			}
+			.line {
+				display: flex;
+				flex-direction: row;
+				justify-content: space-evenly;
+			}
+			.controller {
+				width: 9%;
+				cursor: pointer;
+				height: auto;
+			}
+
+			.controller.last {
+				width: 7, 5%;
+			}
+			#albumCover {
+				height: 100%;
+				width: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="overlay"></div>
+		<div id="waiting"></div>
+		<div id="left">
+			<div style="margin-left: 10px">
+				<h2 class="trackTitle"></h2>
+				<h3 style="font-size: 1.3em" class="trackArtist"></h3>
+			</div>
+			<div class="line" style="margin-bottom: 20px">
+				<img
+					src="/icons/controllers/button-rewind.svg"
+					alt="Prev"
+					id="prevButton"
+					class="controller"
+				/>
+				<img
+					src="/icons/controllers/button-pause.svg"
+					alt="Play"
+					id="playButton"
+					class="controller"
+				/>
+				<img
+					src="/icons/controllers/button-skip.svg"
+					alt="Next"
+					id="nextButton"
+					class="controller"
+				/>
+			</div>
+			<div class="line" style="padding-bottom: 10px">
+				<img
+					src="/icons/controllers/ic_repeat_48px.svg"
+					alt="Repeat"
+					id="repeatButton"
+					class="controller last"
+				/>
+				<img
+					src="/icons/controllers/reload.svg"
+					alt="Reload"
+					id="reloadButton"
+					class="controller last"
+				/>
+				<img
+					src="/icons/controllers/shuffle-off.svg"
+					alt="Shuffle"
+					id="shuffleButton"
+					class="controller last"
+				/>
+				<img
+					src="/icons/controllers/sound.svg"
+					alt="Volume"
+					id="volumeButton"
+					class="controller last"
+				/>
+				<img
+					src="/icons/controllers/heart.svg"
+					alt="Save"
+					id="likeButton"
+					class="controller last"
+				/>
+			</div>
+		</div>
+		<div id="right">
+			<img
+				alt="album-cover"
+				id="albumCover"
+				crossorigin="anonymous"
+				src="/icons/icons/128.png"
+			/>
+		</div>
+		<script src="/player/player.js" type="module"></script>
+	</body>
+</html>

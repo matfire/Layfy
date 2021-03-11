@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<link rel="stylesheet" href="/main.css" />
+		<link rel="stylesheet" href="/player/player.css" />
+	</head>
+	<body>
+		<div id="overlay" style="display: none">
+			<div class="loadingContainer">
+				<h4>Fetching data, please wait...</h4>
+				<div class="lds-facebook">
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+			</div>
+		</div>
+		<div id="waiting" style="display: none">
+			<span class="loader"></span>
+			<h4>You don't seem to be playing anything right now...</h4>
+			<h5>Please reopen this extension if you are</h5>
+		</div>
+		<main>
+			<div class="currentlyPlayingContainer">
+				<div class="albumContainer">
+					<img
+						src="/icons/icons/128.png"
+						alt="album cover"
+						class="albumImage"
+						id="albumCover"
+					/>
+				</div>
+				<div class="textContainer">
+					<h3 class="trackTitle"></h3>
+					<h4 class="trackArtist"></h4>
+				</div>
+				<div class="controllerContainer">
+					<span class="tooltip" data-text="Toggle Shuffle">
+						<img
+							src="/icons/controllers/shuffle-off.svg"
+							alt="Toggle Shuffle"
+							class="controller tooltip"
+							id="shuffleButton"
+						/>
+					</span>
+					<span class="tooltip" data-text="Refresh player">
+						<img
+							src="/icons/controllers/reload.svg"
+							alt="Reload data"
+							class="controller"
+							id="reloadButton"
+						/>
+					</span>
+					<span class="tooltip" data-text="Save/Forget track">
+						<img
+							src="/icons/controllers/heart.svg"
+							alt="Save/Forget track"
+							class="controller"
+							id="likeButton"
+						/>
+					</span>
+				</div>
+				<div class="controllerContainer last">
+					<span class="tooltip" data-text="Toggle Repeat">
+						<img
+							src="/icons/controllers/ic_repeat_48px.svg"
+							alt="Toggle Repeat"
+							id="repeatButton"
+							class="controller"
+						/>
+					</span>
+					<span class="tooltip" data-text="Previous Track">
+						<img
+							src="/icons/controllers/button-rewind.svg"
+							alt="Rewind"
+							id="prevButton"
+							class="controller"
+						/>
+					</span>
+					<span class="tooltip" data-text="Play/Pause">
+						<img
+							src="/icons/controllers/button-pause.svg"
+							alt="PLay/Pause"
+							class="controller"
+							id="playButton"
+						/>
+					</span>
+					<span class="tooltip" data-text="Next Track">
+						<img
+							src="/icons/controllers/button-skip.svg"
+							alt="Forward"
+							class="controller"
+							id="nextButton"
+						/>
+					</span>
+					<span class="tooltip" data-text="Mute/Unmute Volume">
+						<img
+							src="/icons/controllers/sound.svg"
+							alt="Mute/Unmute"
+							class="controller"
+							id="volumeButton"
+						/>
+					</span>
+				</div>
+			</div>
+			<div id="snackbar"></div>
+		</main>
+		<script src="/player/player.js" type="module"></script>
+	</body>
+</html>
