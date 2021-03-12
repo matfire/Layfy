@@ -1,14 +1,10 @@
 {
     "name":"Layfy",
-    "version":"0.1.4",
+    "version":"1.0.0",
     "description":"Control your spotify playback in a popup window",
     "manifest_version": 2,
     "browser_action": {
-        "default_popup":"index.html"
-    },
-    "options_ui": {
-        "page":"options.html",
-        "open_in_tab":false
+        "default_popup":"login/login.html"
     },
     "background": {
         "page":"background.html",
@@ -44,10 +40,10 @@
         },
         "change_volume": {
             "description":"Mute/Unmute volume on device",
-            "windows":"",
-            "mac":"",
-            "linux":"",
-            "chromeos":""
+            "windows":"Ctrl+Shift+U",
+            "mac":"Command+Shift+U",
+            "linux":"Ctrl+Shift+U",
+            "chromeos":"Ctrl+Shift+U"
         }
     },
     "icons": {
@@ -55,5 +51,5 @@
         "48": "icons/icons/48.png",
         "128": "icons/icons/128.png"
     },
-    "permissions": ["notifications"]
+    "permissions": ["notifications", "identity", "contextMenus", "tabs"]
 }

@@ -143,7 +143,11 @@ const updateSpotify = async (currentlyPlaying) => {
 			r.style.setProperty("--backgroundColor", hexColor);
 			r.style.setProperty(
 				"--textColor",
-				tinycolor.mostReadable(tc, tinycolor.names).toHexString()
+				tinycolor
+					.mostReadable(tc, tinycolor.names, {
+						includeFallbackColors: true,
+					})
+					?.toHexString() || "black"
 			);
 		} else {
 			albumCover.addEventListener("load", async () => {
@@ -155,12 +159,16 @@ const updateSpotify = async (currentlyPlaying) => {
 				r.style.setProperty("--backgroundColor", hexColor);
 				r.style.setProperty(
 					"--textColor",
-					tinycolor.mostReadable(tc, tinycolor.names).toHexString()
+					tinycolor
+						.mostReadable(tc, tinycolor.names, {
+							includeFallbackColors: true,
+						})
+						?.toHexString() || "black"
 				);
 			});
 		}
 	} else {
-		// displayWaitingTrack();
+		showWaiting();
 	}
 };
 
@@ -178,11 +186,13 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 			trackEvent.emit("liked_song_value", msg.saved);
 			break;
 		case "errorMessage":
-			snackbar.innerText = `${msg.value}`;
+			document.getElementById("snackbar-text").innerText = `${msg.value}`;
+			snackbar.style.display = "flex";
 			hideOverlay();
 			snackbar.classList.add("show");
 			setTimeout(() => {
 				snackbar.classList.remove("show");
+				snackbar.style.display = "none";
 			}, 3000);
 			break;
 		case "close_window":
